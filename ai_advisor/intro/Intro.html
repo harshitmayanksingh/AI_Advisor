@@ -1,0 +1,198 @@
+{{ block title }}Welcome to the Study{{ endblock }}
+
+{{ block content }}
+<style>
+  :root{
+    --bg:#0f172a; --card:#111827; --muted:#94a3b8; --text:#e5e7eb;
+    --accent:#22d3ee; --accent2:#a78bfa; --good:#10b981; --warn:#f59e0b;
+    --example-bg: rgba(34,211,238,.12);      /* brighter than before */
+    --example-border: rgba(34,211,238,.55);  /* stronger contrast */
+  }
+  html,body{background:var(--bg);}
+  .wrap{
+    max-width:980px;margin:30px auto;color:var(--text);
+    font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    line-height:1.55;
+  }
+  .hero{
+    background:
+      radial-gradient(1200px 400px at 20% -20%, rgba(34,211,238,.15), transparent),
+      radial-gradient(1200px 400px at 120% -10%, rgba(167,139,250,.18), transparent);
+    border:1px solid rgba(255,255,255,.06);border-radius:18px;
+    padding:28px 22px;box-shadow:0 10px 40px rgba(0,0,0,.3);
+  }
+  h1{font-weight:900;letter-spacing:.2px;font-size:clamp(28px,3.6vw,42px);margin:0 0 8px}
+  .sub{color:var(--muted);margin:0 0 14px;font-size:clamp(14px,1.7vw,18px)}
+  .badges{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0 8px}
+  .badge{font-size:15px;color:#0b1220;background:linear-gradient(130deg,var(--accent),var(--accent2));padding:8px 14px;border-radius:999px;font-weight:800;letter-spacing:.25px}
+
+  /* STACKED layout: one column, cards flow vertically */
+  .stack{display:flex;flex-direction:column;gap:16px;margin-top:18px}
+  .card{
+    background:linear-gradient(180deg,#0b1020,#0b0f1a);
+    border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;
+  }
+  .card h3{margin:0 0 8px;font-size:20px}
+  .eyebrow{font-size:13px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+
+  .kpi{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .kpi .chip{background:#0a1226;border:1px solid rgba(255,255,255,.08);padding:8px 10px;border-radius:10px;font-size:13px}
+
+  /* Brighter example boxes */
+  .example{
+    background:var(--example-bg);
+    border:1px solid var(--example-border);
+    border-left:4px solid var(--accent);
+    border-radius:12px;padding:12px;margin-top:10px
+  }
+  .example b{color:#bff3fb}
+  details{
+    background:#0b1222;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;margin-top:12px
+  }
+  details summary{cursor:pointer;color:var(--accent);font-weight:700}
+  .callout{
+    display:flex;gap:12px;align-items:flex-start;background:#0b1a13;border:1px solid rgba(16,185,129,.35);
+    border-radius:14px;padding:14px;margin-top:12px
+  }
+  .warn{background:#261a07;border-color:rgba(245,158,11,.45)}
+  .muted{color:var(--muted)}
+  ul{margin:8px 0 0 18px;padding:0}
+  li{margin:6px 0}
+  .footer{
+    display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:18px 2px 6px
+  }
+  .btn-next{
+    background:linear-gradient(130deg,var(--accent),var(--accent2));color:#091020;border:none;
+    font-weight:900;padding:12px 18px;border-radius:12px;cursor:pointer;
+    box-shadow:0 10px 20px rgba(0,0,0,.35);letter-spacing:.2px
+  }
+  .btn-next:hover{filter:brightness(1.05);transform:translateY(-1px)}
+  .tiny{font-size:12px;color:var(--muted)}
+  .emoji{font-size:22px}
+  .hl{color:var(--accent)}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Start Here</h1>
+    <p class="sub">This study has three short parts about making and explaining <b>investment choices</b>. You’ll have a <b>$10</b> budget each round.</p>
+    <div class="badges">
+      <span class="badge">~10–15 minutes for each step</span>
+      <span class="badge">You might get an AI helper</span>
+      <span class="badge">One random-round bonus</span>
+    </div>
+  </div>
+
+  <!-- STACKED: Step 1 first (with examples), then Step 2, then Step 3 -->
+  <div class="stack">
+
+    <!-- STEP 1 -->
+    <div class="card">
+      <div class="eyebrow">Step 1 • 4 rounds</div>
+      <h3>Your Own Choice <span class="emoji">🎯</span></h3>
+
+      <p>You will decide how to split <b>$10</b> between two investments. Whatever you do <i>not</i> put into the first investment will automatically go into the second one.</p>
+      <div class="example">
+        <b>Example:</b> If you put <b>$4</b> into the first investment, then the remaining <b>$6</b> goes into the second investment.
+      </div>
+
+      <h4 style="margin:14px 0 6px">Investment 1: <span class="hl">The Uncertain One</span></h4>
+      <ul>
+        <li>This investment can pay you different amounts each time.</li>
+        <li>It has an <b>average</b> payout per dollar.</li>
+        <li>Sometimes it pays more; sometimes it pays less.</li>
+        <li>We will show you the possible amounts and how likely each one is.</li>
+      </ul>
+
+      <h4 style="margin:14px 0 6px">Investment 2: <span class="hl">The Certain One</span></h4>
+      <ul>
+        <li>This investment pays a set amount for every dollar you put in.</li>
+        <li>Sometimes this amount is <b>$0.00</b>, and sometimes it is <b>$0.05</b> per dollar.</li>
+      </ul>
+      <div class="example">
+        <b>Example:</b> If the certain investment pays <b>$0.05</b> and you invest <b>$2</b>, you earn <b>$0.10</b> that round (your $2 becomes $2.10 from that investment).
+      </div>
+
+      <ul style="margin-top:10px">
+        <li>Each round includes one quick <b>question</b> to check understanding.</li>
+      </ul>
+
+      <div class="kpi">
+        <div class="chip">Budget: $10</div>
+        <div class="chip">“Spin” tool: try one sample outcome</div>
+        <div class="chip">1 quick question per round</div>
+      </div>
+
+      <details><summary>What does the AI helper do?</summary>
+        <p class="muted">When available, it explains ideas (e.g., average vs. variable payoffs) in plain English. It <b>will not</b> tell you an exact number to choose.</p>
+      </details>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="card">
+      <div class="eyebrow">Step 2 • 12 mini rounds</div>
+      <h3>Advise Three Clients <span class="emoji">🧠</span></h3>
+      <p>Now you will act as an advisor for three different clients. Your job is to tell each client how to split <b>$10</b> between the two investments.</p>
+      <ul>
+        <li>Each client cares about different things. Some want more certainty; others want a better chance to make the most money.</li>
+        <li>You will see each client’s goal in their description.</li>
+        <li>Your recommendation should match what that client prefers.</li>
+        <li>Enter a number (0–10) and your confidence.</li>
+      </ul>
+      <div class="kpi">
+        <div class="chip">3 client types</div>
+        <div class="chip">4 setups each</div>
+        <div class="chip">Short & fast</div>
+      </div>
+      <details><summary>Tip for solid advice</summary>
+        <p class="muted">Align the split with the client’s goal and with how variable the uncertain investment can be.</p>
+      </details>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="card">
+      <div class="eyebrow">Step 3 • 4 rounds</div>
+      <h3>Make Your Choice Again <span class="emoji">🔁</span></h3>
+      <p>Return to your own decision with similar information. This checks how your thinking carries over after advising.</p>
+      <ul>
+        <li>Same $10 budget and one quick question per round.</li>
+        <li>AI (if on) remains concept-only.</li>
+      </ul>
+      <div class="kpi">
+        <div class="chip">Reflect & decide</div>
+        <div class="chip">Confidence rating</div>
+      </div>
+    </div>
+
+  </div><!-- /stack -->
+
+  <!-- Quick rules -->
+  <div class="callout" style="margin-top:18px;">
+    <div class="icon">✅</div>
+    <div>
+      <b>Quick Rules:</b>
+      <ul style="margin-left:18px">
+        <li>Work independently; no outside tools.</li>
+        <li>Ask the AI short, concept questions only.</li>
+        <li>Keep your recommendations consistent with each client’s goals.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="icon">⚠️</div>
+    <div>
+      <b>Bonus & Privacy:</b>
+      <ul>
+        <li><b>One</b> Step-1 round is randomly selected to determine any bonus (based on your final portfolio for that round).</li>
+        <li>We record your choices and brief AI chats for research; no personal financial advice is provided.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="tiny">Ready? You’ll proceed to Step 1 next. You can ask brief, concept questions where the AI helper is available.</div>
+    <button class="otree-btn-next btn-next">Continue</button>
+  </div>
+</div>
+{{ endblock }}

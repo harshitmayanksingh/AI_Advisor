@@ -1,0 +1,58 @@
+{{ block title }}Step 1 — Summary{{ endblock }}
+
+{{ block content }}
+
+<p>Thanks! Here’s a recap of your decisions and quiz answers.</p>
+
+<table style="width:100%; border-collapse:collapse; margin:12px 0;">
+  <thead>
+    <tr>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Round</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Variant</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">rf (safe, per $1)</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">r (risky average, per $1)</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">σ (standard deviation)</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">k (risky $)</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">MC answer</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Correct?</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.rnd }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.v_name }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.rf }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.r }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.sigma }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.k }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.mc }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">
+        {% if row.correct %}✓{% else %}✗{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<p><strong>Total correct:</strong> {{ total_correct }} / {{ C.NUM_ROUNDS }}</p>
+
+<hr>
+
+<h4>Payment</h4>
+<p>Randomly selected round: <strong>{{ rim_round }}</strong> (Variant {{ rim_variant }})</p>
+
+<p>
+  <em>Average-based calculation (per $10 budget):</em><br>
+  <code>{{ rim_k }} × r (={{ rim_r }}) + {{ rim_safe }} × rf (={{ rim_rf }})</code>
+  = <strong>${{ rim_total }}</strong>
+</p>
+
+<p>
+  <em>Bonus conversion:</em>
+  ${{ rim_total }} × {{ C.BONUS_PER_DOLLAR }} → <strong>{{ rim_bonus }}</strong> points
+</p>
+
+{{ next_button }}
+
+{{ endblock }}

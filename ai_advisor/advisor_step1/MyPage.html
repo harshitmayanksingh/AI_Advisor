@@ -1,0 +1,357 @@
+{{ block title }}Advisor – Step 1 (Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}){{ endblock }}
+{{ block content }}
+
+<!-- Task info panel: Variant -->
+<section class="task-card" style="
+    border:1px solid #e5e7eb; border-radius:14px; overflow:hidden;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.06); background:#fff; margin-bottom:14px;">
+  <header style="
+      display:flex; align-items:center; gap:10px; padding:10px 12px;
+      background: linear-gradient(135deg, #e8f7ee 0%, #d8f3ff 100%);">
+    <div style="font-size:20px;">🧪</div>
+    <div>
+      <div style="font-weight:700; font-size:20px; letter-spacing:.2px;">Task Information</div>
+      <div style="font-size:14px; color:#374151;">Market Setup (this round)</div>
+    </div>
+  </header>
+
+  <div style="padding:12px 14px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+      <div style="font-weight:700;">Variant</div>
+      <span style="
+          font-size:12px; background:#eef2ff; color:#3730a3;
+          border:1px solid #c7d2fe; padding:4px 8px; border-radius:999px;">
+        {{ variant.name }}
+      </span>
+    </div>
+
+    <!-- Stat chips -->
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <span style="font-size:18px; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:6px 10px; border-radius:10px;">
+        risk-free asset return (rf): <strong><code>{{ variant.rf }}</code></strong>
+      </span>
+      <span style="font-size:18px; background:#f0f9ff; color:#075985; border:1px solid #bae6fd; padding:6px 10px; border-radius:10px;">
+        risky asset return (r): <strong><code>{{ variant.r }}</code></strong>
+      </span>
+      <span style="font-size:18px; background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; padding:6px 10px; border-radius:10px;">
+        dispersion (σ): <strong><code>{{ variant.sigma }}</code></strong>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- AI Assistant (only when S1 is on) -->
+{% if show_ai_panel %}
+<section class="task-card" style="
+    border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; margin-bottom:16px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.06); background:#fff;">
+  <header style="
+      display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px;
+      background: linear-gradient(135deg, #e8f7ee 0%, #d8f3ff 100%);">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div style="font-size:18px;">🤖</div>
+      <div>
+        <div style="font-weight:700; font-size:18px; letter-spacing:.2px;">AI Assistant</div>
+        <div style="font-size:12px; color:#374151;">Enter = send, Shift+Enter = newline</div>
+      </div>
+    </div>
+  </header>
+
+  <div style="padding:12px 14px;">
+    <!-- Chat area -->
+    <div id="ai-chat" style="
+        max-height:420px; min-height:180px; overflow:auto;
+        border:1px solid #e5e7eb; padding:10px; margin:6px 0 12px; border-radius:10px; background:#fafafa;"></div>
+
+    <!-- Input row -->
+    <div style="display:flex; gap:10px; align-items:flex-start;">
+      <textarea
+        id="ai-input"
+        rows="10"
+        placeholder="Ask your question… (Enter = send, Shift+Enter = new line)"
+        style="flex:1; padding:10px; min-height:140px; resize:vertical; border:1px solid #e5e7eb; border-radius:10px;"></textarea>
+      <button type="button" onclick="sendAI()" style="
+          padding:10px 14px; height:44px; border-radius:10px; border:1px solid #e5e7eb; background:#f8fafc;">
+        Ask
+      </button>
+    </div>
+
+    <div style="margin-top:8px; font-size:12px; color:#6b7280;">
+      The assistant explains <strong>rf</strong>, <strong>average risky payoff (r)</strong>, and <strong>σ</strong> (spread). It won’t give dollar amounts or allocations.
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Distribution CDF + PDF (interactive) -->
+<section class="task-card" style="
+    border:1px solid #e5e7eb; border-radius:14px; overflow:hidden;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.06); background:#fff; margin-bottom:16px;">
+  <header style="
+      display:flex; align-items:center; gap:10px; padding:10px 12px;
+      background: linear-gradient(135deg, #fff1f2 0%, #eef2ff 100%);">
+    <div style="font-size:18px;">📈</div>
+    <div>
+      <div style="font-weight:700; font-size:20px; letter-spacing:.2px;">Risky distribution (per $1)</div>
+      <div style="font-size:12px; color:#374151;">CDF & PDF</div>
+    </div>
+  </header>
+
+  <div style="padding:12px 14px;">
+    <div style="font-size:12px; color:#555; margin-bottom:6px;">
+      Variant {{ variant.name }}: rf={{ variant.rf }}, average r={{ variant.r }}, σ={{ variant.sigma }}
+    </div>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px;">
+      <!-- CDF -->
+      <figure role="group" aria-label="CDF of risky payoff" style="flex:1; min-width:320px; margin:0;">
+        <div style="font-weight:600; margin-bottom:4px;">CDF (cumulative)</div>
+        <canvas id="cdfCanvas" width="640" height="240"
+                style="width:100%; height:240px; border:1px solid #eee;"></canvas>
+        <figcaption style="font-size:12px; color:#6b7280; margin-top:6px;">
+          At value x, the CDF shows the chance the payoff is ≤ x. Vertical lines mark rf, P10, P50, and P90.
+        </figcaption>
+      </figure>
+
+      <!-- PDF -->
+      <figure role="group" aria-label="PDF of risky payoff" style="flex:1; min-width:320px; margin:0;">
+        <div style="font-weight:600; margin-bottom:4px;">PDF (density)</div>
+        <canvas id="pdfCanvas" width="640" height="240"
+                style="width:100%; height:240px; border:1px solid #eee;"></canvas>
+        <figcaption style="font-size:12px; color:#6b7280; margin-top:6px;">
+          The PDF shows how likely each payoff is around the average. Vertical lines mark rf, P10, P50, and P90.
+        </figcaption>
+      </figure>
+    </div>
+
+    <!-- Permanent, short hint (more salient) -->
+    <div id="spin-hint" style="
+         margin-top:10px; font-size:14px; color:#0f172a;
+         background:#f1f5f9; border:1px solid #e2e8f0; border-radius:10px;
+         padding:8px 10px; display:inline-flex; align-items:center; gap:8px;">
+      <span>🎲</span>
+      <strong>Click the button to simulate one random payoff from the risky distribution (per $1 invested).</strong>
+    </div>
+
+    <!-- Slider + average total -->
+    <div style="display:flex; gap:12px; align-items:center; margin-top:10px; flex-wrap:wrap;">
+      <label for="kSlider"><strong>Your dollars in the risky asset (0–10):</strong></label>
+      <input id="kSlider" type="range" min="0" max="10" step="1" value="5"
+             oninput="updateK(this.value)" style="flex:1; min-width:160px;">
+      <span id="kVal">5</span>
+      <span id="avgTotal" style="margin-left:auto;"><em>Average total ($10 budget):</em> …</span>
+    </div>
+
+    <!-- Random payoff -->
+    <div style="margin-top:10px;">
+      <button type="button" onclick="spinOnce()" aria-describedby="spin-hint">Try a random risky payoff</button>
+      <span id="spinOut" aria-live="polite" style="margin-left:12px;"></span>
+    </div>
+
+    <!-- Longer explanation (muted) -->
+    <div style="font-size:12px; color:#777; margin-top:6px;">
+      This panel is for intuition only—your actual answer is how many dollars you allocate to the risky asset below.
+      “Average r” is the expected payoff; σ shows how wide outcomes can vary. Vertical lines mark P10, P50, P90, and rf.
+    </div>
+  </div>
+</section>
+
+<!-- Allocation (real answer) -->
+{{ formfield 'k_own' }}
+
+<hr>
+
+<!-- MC quiz (custom render) -->
+<p><strong>Quiz:</strong> {{ mc_prompt }}</p>
+<div style="margin-left:4px;">
+  <label style="display:block; margin:6px 0;">
+    <input type="radio" name="mc_answer" value="A" required> A) {{ mc_options.0 }}
+  </label>
+  <label style="display:block; margin:6px 0;">
+    <input type="radio" name="mc_answer" value="B"> B) {{ mc_options.1 }}
+  </label>
+  <label style="display:block; margin:6px 0;">
+    <input type="radio" name="mc_answer" value="C"> C) {{ mc_options.2 }}
+  </label>
+  <label style="display:block; margin:6px 0;">
+    <input type="radio" name="mc_answer" value="D"> D) {{ mc_options.3 }}
+  </label>
+</div>
+
+{{ formfield 'mc_conf' }}
+
+{{ next_button }}
+
+<!-- Scripts (mirror Step 2 style/behavior) -->
+<script>
+  // ----- Parameters -----
+  const rf   = parseFloat('{{ variant.rf }}');
+  const rAvg = parseFloat('{{ variant.r }}');
+  const sig  = parseFloat('{{ variant.sigma }}');
+  const BUDGET = 10;
+
+  // ----- Normal helpers -----
+  function erf(x){
+    const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+    const sign = x<0 ? -1 : 1; x = Math.abs(x);
+    const t = 1/(1+p*x);
+    const y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*Math.exp(-x*x);
+    return sign*y;
+  }
+  function normCdf(x, mu, sd){
+    if (sd <= 1e-9) return x < mu ? 0 : 1;
+    return 0.5 * (1 + erf((x - mu)/(sd*Math.SQRT2)));
+  }
+  function normPdf(x, mu, sd){
+    if (sd <= 1e-9) return 0;
+    const z = (x - mu)/sd;
+    return Math.exp(-0.5*z*z) / (sd * Math.sqrt(2*Math.PI));
+  }
+
+  // Percentile markers
+  const z10 = -1.281551565545, z50 = 0, z90 = 1.281551565545;
+  const P10 = Math.max(0, rAvg + z10*sig);
+  const P50 = Math.max(0, rAvg + z50*sig);
+  const P90 = Math.max(0, rAvg + z90*sig);
+
+  // ----- CDF canvas -----
+  const c = document.getElementById('cdfCanvas'), ctx = c.getContext('2d');
+  const pad = {l:42, r:12, t:12, b:28};
+  function xScale(x, xmin, xmax){ return pad.l + (x - xmin) * (c.width - pad.l - pad.r) / (xmax - xmin); }
+  function yScale(y){ return c.height - pad.b - y * (c.height - pad.t - pad.b); }
+  function drawCDF(){
+    const xmin = 0, xmax = Math.max(rAvg + 4*sig, rf*1.5, 1.5);
+    ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
+    ctx.strokeStyle='#ccc'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.l, yScale(0)); ctx.lineTo(c.width-pad.r, yScale(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l, yScale(0)); ctx.lineTo(pad.l, yScale(1)); ctx.stroke();
+    ctx.fillStyle='#666'; ctx.font='12px system-ui, sans-serif';
+    [0,0.25,0.5,0.75,1].forEach(y=>{
+      ctx.fillText(y.toFixed(2), 4, yScale(y)+4);
+      ctx.strokeStyle='#f2f2f2'; ctx.beginPath(); ctx.moveTo(pad.l, yScale(y)); ctx.lineTo(c.width-pad.r, yScale(y)); ctx.stroke();
+    });
+    const ticks=[{x:rf,label:'rf'},{x:P10,label:'P10'},{x:P50,label:'P50'},{x:P90,label:'P90'}];
+    ctx.fillStyle='#444'; ticks.forEach(t=>{
+      const X=xScale(t.x,xmin,xmax);
+      ctx.strokeStyle='#ddd'; ctx.beginPath(); ctx.moveTo(X, yScale(0)); ctx.lineTo(X, yScale(1)); ctx.stroke();
+      ctx.fillText(t.label, X-10, c.height-6);
+    });
+    ctx.strokeStyle='#2a7'; ctx.lineWidth=2; ctx.beginPath();
+    const N=200; for(let i=0;i<=N;i++){
+      const x=xmin+(xmax-xmin)*i/N; const y=normCdf(x,rAvg,sig);
+      const X=xScale(x,xmin,xmax), Y=yScale(y); if(i===0) ctx.moveTo(X,Y); else ctx.lineTo(X,Y);
+    } ctx.stroke();
+  }
+
+  // ----- PDF canvas -----
+  const pdfCanvas = document.getElementById('pdfCanvas'), pdfCtx = pdfCanvas.getContext('2d');
+  const padPDF = {l:42, r:12, t:12, b:28};
+  function xScalePDF(x, xmin, xmax){ return padPDF.l + (x - xmin) * (pdfCanvas.width - padPDF.l - padPDF.r) / (xmax - xmin); }
+  function yScalePDF(y, ymax){ return pdfCanvas.height - padPDF.b - y * (pdfCanvas.height - padPDF.t - padPDF.b) / ymax; }
+  function drawPDF(){
+    const xmin=0, xmax=Math.max(rAvg+4*sig, rf*1.5, 1.5);
+    const peak = normPdf(rAvg, rAvg, sig), ymax = peak*1.1;
+    pdfCtx.clearRect(0,0,pdfCanvas.width,pdfCanvas.height); pdfCtx.fillStyle='#fff'; pdfCtx.fillRect(0,0,pdfCanvas.width,pdfCanvas.height);
+    pdfCtx.strokeStyle='#ccc'; pdfCtx.lineWidth=1;
+    pdfCtx.beginPath(); pdfCtx.moveTo(padPDF.l, yScalePDF(0, ymax)); pdfCtx.lineTo(pdfCanvas.width-padPDF.r, yScalePDF(0, ymax)); pdfCtx.stroke();
+    pdfCtx.beginPath(); pdfCtx.moveTo(padPDF.l, yScalePDF(0, ymax)); pdfCtx.lineTo(padPDF.l, padPDF.t); pdfCtx.stroke();
+    pdfCtx.fillStyle='#666'; pdfCtx.font='12px system-ui, sans-serif';
+    [0, ymax*0.25, ymax*0.5, ymax*0.75, ymax].forEach(y=>{
+      pdfCtx.fillText(y.toFixed(2), 4, yScalePDF(y, ymax)+4);
+      pdfCtx.strokeStyle='#f2f2f2'; pdfCtx.beginPath(); pdfCtx.moveTo(padPDF.l, yScalePDF(y, ymax)); pdfCtx.lineTo(pdfCanvas.width-padPDF.r, yScalePDF(y, ymax)); pdfCtx.stroke();
+    });
+    const ticks=[{x:rf,label:'rf'},{x:P10,label:'P10'},{x:P50,label:'P50'},{x:P90,label:'P90'}];
+    pdfCtx.fillStyle='#444'; ticks.forEach(t=>{
+      const X=xScalePDF(t.x,xmin,xmax);
+      pdfCtx.strokeStyle='#ddd'; pdfCtx.beginPath(); pdfCtx.moveTo(X, yScalePDF(0, ymax)); pdfCtx.lineTo(X, padPDF.t); pdfCtx.stroke();
+      pdfCtx.fillText(t.label, X-10, pdfCanvas.height-6);
+    });
+    pdfCtx.strokeStyle='#27a'; pdfCtx.lineWidth=2; pdfCtx.beginPath();
+    const N=200; for(let i=0;i<=N;i++){
+      const x=xmin+(xmax-xmin)*i/N; const y=normPdf(x,rAvg,sig);
+      const X=xScalePDF(x,xmin,xmax), Y=yScalePDF(y, ymax); if(i===0) pdfCtx.moveTo(X,Y); else pdfCtx.lineTo(X,Y);
+    } pdfCtx.stroke();
+  }
+
+  // Average total (for chosen risky dollars)
+  function updateAverageTotal(k){
+    const kNum = parseInt(k,10);
+    const total = kNum * rAvg + (BUDGET - kNum) * rf;
+    document.getElementById('avgTotal').innerHTML =
+      `<em>Average total ($10 budget):</em> $${total.toFixed(2)}`;
+  }
+  function updateK(k){
+    document.getElementById('kVal').textContent = k;
+    updateAverageTotal(k);
+  }
+
+  // Spin
+  function spinOnce(){
+    let u=0,v=0; while(u===0) u=Math.random(); while(v===0) v=Math.random();
+    const z=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+    let risky=rAvg+sig*z; if (risky<0) risky=0;
+
+    const k = parseInt(document.getElementById('kVal').textContent,10);
+    const total = k * risky + (BUDGET - k) * rf;
+
+    drawCDF(); drawPDF();
+    // mark on CDF
+    { const xmin=0, xmax=Math.max(rAvg+4*sig, rf*1.5, 1.5);
+      const X = xScale(risky, xmin, xmax); const Y = yScale(normCdf(risky, rAvg, sig));
+      ctx.fillStyle = '#e55'; ctx.beginPath(); ctx.arc(X, Y, 4, 0, Math.PI*2); ctx.fill(); }
+    // mark on PDF
+    { const xmin=0, xmax=Math.max(rAvg+4*sig, rf*1.5, 1.5);
+      const ymax = normPdf(rAvg, rAvg, sig)*1.1;
+      const X = xScalePDF(risky, xmin, xmax); const Y = yScalePDF(normPdf(risky, rAvg, sig), ymax);
+      pdfCtx.fillStyle = '#e55'; pdfCtx.beginPath(); pdfCtx.arc(X, Y, 4, 0, Math.PI*2); pdfCtx.fill(); }
+
+    document.getElementById('spinOut').textContent =
+      `You drew $${risky.toFixed(2)} for each $1 at risk. With your ${k} risky dollars, your total would be about $${total.toFixed(2)}.`;
+  }
+
+  // Sync slider with k_own field
+  const kField  = document.querySelector('input[name="k_own"]');
+  const kSlider = document.getElementById('kSlider');
+  if (kField && kSlider) {
+    const init = kField.value ? parseInt(kField.value, 10) : parseInt(kSlider.value, 10);
+    const seedVal = isNaN(init) ? 5 : Math.max(0, Math.min(10, init));
+    kSlider.value = seedVal; kField.value = seedVal; updateK(seedVal);
+    kField.addEventListener('input', e => {
+      const v = Math.max(0, Math.min(10, parseInt(e.target.value || 0, 10)));
+      if (!Number.isNaN(v)) { kSlider.value = v; updateK(v); }
+    });
+    kSlider.addEventListener('input', e => { kField.value = e.target.value; });
+  } else {
+    updateK(document.getElementById('kVal').textContent);
+  }
+
+  // Initial render
+  drawCDF(); drawPDF();
+
+  // Live chat wiring (aligned with Step 2)
+  function appendMsg(role, text, typing=false) {
+    const box = document.getElementById('ai-chat'); if (!box) return;
+    const wrap=document.createElement('div'); wrap.style.marginBottom='8px'; wrap.style.whiteSpace='pre-wrap';
+    wrap.textContent=(role==='user'?'You: ':'AI: '); const span=document.createElement('span'); wrap.appendChild(span);
+    box.appendChild(wrap); box.scrollTop=box.scrollHeight;
+    if (!typing) { span.textContent = text; return; }
+    let i=0, chars=text.split(''); (function tick(){ if(i<chars.length){ span.textContent+=chars[i++]; box.scrollTop=box.scrollHeight; setTimeout(tick,12);} })();
+  }
+  function sendAI(){
+    const input=document.getElementById('ai-input'); if(!input) return;
+    const q=(input.value||'').trim(); if(!q) return;
+    appendMsg('user', q); liveSend({type:'ask', text:q}); input.value='';
+  }
+  (function wireChatKeys(){
+    const box=document.getElementById('ai-input'); if(!box) return;
+    box.addEventListener('keydown', (e)=>{
+      if (e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendAI(); }
+    });
+  })();
+  function liveRecv(data){
+    if (!data) return;
+    if (data.type==='answer'){ appendMsg('assistant', data.text, true); }
+  }
+</script>
+
+{{ endblock }}

@@ -1,0 +1,44 @@
+{{ block title }}Step 2 — Advice Summary{{ endblock }}
+
+{{ block content }}
+<p>Here’s a recap of your advice across variants and clients.</p>
+
+<table style="width:100%; border-collapse:collapse; margin-top:10px;">
+  <thead>
+    <tr>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Round</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Variant</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Client</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">p</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">rf</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">r (avg)</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">σ</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Advised $</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">k*</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">|Advised − k*|</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Signed gap</th>
+      <th style="text-align:left; border-bottom:1px solid #ddd; padding:6px;">Confidence</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.rnd }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.variant }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.client }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.p }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.rf }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.risky_avg }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.sigma }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.advised_k }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.k_star }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.align_error }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.proj_gap }}</td>
+      <td style="padding:6px; border-bottom:1px solid #f0f0f0;">{{ row.conf }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{{ next_button }}
+{{ endblock }}

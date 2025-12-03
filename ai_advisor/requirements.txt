@@ -1,0 +1,4 @@
+otree>=5.11.4
+python-dotenv>=1.0
+openai>=1.40
+psycopg2-binary>=2.9

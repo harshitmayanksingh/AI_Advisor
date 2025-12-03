@@ -1,0 +1,29 @@
+{{ block title }}Step 3 — Summary{{ endblock }}
+{{ block content }}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Round</th><th>Variant</th><th>rf</th><th>r (avg)</th><th>σ</th>
+      <th>Your $ risky</th><th>MC</th><th>Conf</th><th>Used AI</th><th>#Q</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td>{{ row.rnd }}</td>
+      <td>{{ row.variant }}</td>
+      <td>{{ row.rf }}</td>
+      <td>{{ row.risky_avg }}</td>
+      <td>{{ row.sigma }}</td>
+      <td>{{ row.k_own }}</td>
+      <td>{{ row.mc }}</td>
+      <td>{{ row.conf }}</td>
+      <td>{{ row.used_ai }}</td>
+      <td>{{ row.ai_qs }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p><em>Total rounds with AI used:</em> {{ total_ai_rounds }} | <em>Total AI questions:</em> {{ total_ai_qs }}</p>
+{{ next_button }}
+{{ endblock }}
