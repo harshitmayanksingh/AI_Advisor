@@ -30,6 +30,15 @@ SESSION_CONFIGS = [
             'advisor_step3',
         ],
     ),
+    dict(
+        name='ai_management_advisor',
+        display_name='AI in Management Experiment',
+        num_demo_participants=5,
+        app_sequence=[
+            'management_intro',
+            'management_assessment',
+        ],
+    ),
 ]
 
 
