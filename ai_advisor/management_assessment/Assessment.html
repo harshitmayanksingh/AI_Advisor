@@ -1,0 +1,21 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}Log your management signals{% endblock %}
+
+{% block content %}
+<p class="lead">Score the project on four multipliers. We will weight them and generate a concise AI-style outlook.</p>
+
+<div class="mb-3">
+  <h5>What the model considers</h5>
+  <ul class="mb-0">
+    {% for title, desc in factor_help %}
+      <li><strong>{{ title }}:</strong> {{ desc }}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+{{ formfields }}
+
+<button class="btn btn-primary">Next</button>
+{% endblock %}
