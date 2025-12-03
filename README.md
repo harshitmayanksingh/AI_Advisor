@@ -1,12 +1,12 @@
 # AI_Advisor
 
-This repository now hosts two demo experiences built with oTree:
+This repository hosts two demo experiences built with oTree:
 
 - **AI Financial Advisor Experiment** – the original multi-step flow for investment decisions.
 - **AI in Management Experiment** – a sandbox that mirrors the financial test site but focuses on leadership and project-readiness signals. Participants score management levers, and the app produces an AI-style confidence narrative and checklist.
 
 ## Run a live demo locally
-1) Install dependencies (Python 3.11+ recommended):
+1) Move into the app directory and install dependencies (Python 3.11+ recommended):
    ```bash
    cd ai_advisor
    pip install -r requirements.txt
@@ -16,7 +16,7 @@ This repository now hosts two demo experiences built with oTree:
    cp .env.example .env
    # adjust OTREE_ADMIN_PASSWORD and SECRET_KEY as needed
    ```
-3) Launch the site:
+3) Launch the site (binds to all interfaces so you can test from another device):
    ```bash
    otree devserver 0.0.0.0:8000
    ```
